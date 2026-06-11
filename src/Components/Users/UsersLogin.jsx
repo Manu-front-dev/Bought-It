@@ -1,78 +1,71 @@
-import axios from 'axios'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
 const UsersLogin = () => {
+
   let navigate = useNavigate()
-  let [data, setdata] = useState([])
-
-  let fetchapi = async () => {
-    let respdata = await axios.get('/jsondata/storedata.json')
-    console.log(respdata.data)
-    console.log(respdata.data.users)
-    setdata(respdata.data.users)
-  }
-  useEffect(() => {
-    fetchapi()
-  }, [])
-  // console.log(data);
-
-  let allusersemail = data.map(elem => elem.email)
-  let allUsersPassword = data.map(elem => elem.password)
-
-  // console.log(usermail , userpswd);
-
 
   let [formdata, setformdata] = useState({
     email: "",
     password: ""
   })
 
+  let [err, seterr] = useState("")
+
   let handleinput = (e) => {
     let key = e.target.name
     let val = e.target.value
-    // console.log(key,val);
+
     setformdata({
       ...formdata,
       [key]: val
     })
   }
 
+  let errdesign = {
+    color: 'red',
+    textAlign: 'right'
+  }
+
   let handlesubmit = (e) => {
     e.preventDefault()
-    // console.log(formdata);
 
     let { email, password } = formdata
-    // console.log(usermail.indexof(formdata.email));
-    let emailindex = allusersemail.indexOf(email)
-    let pswdindex = allUsersPassword.indexOf(password)
-    console.log(emailindex, pswdindex);
 
-    if (emailindex !== -1 && pswdindex !== -1) {
-      if (emailindex === pswdindex) {
-        alert(`welcome`)
-        navigate(`/userportal`)
-        toast.success(`login success`)
-      } else {
-        toast.error(`invalid input`)
-      }
-    } else {
-      toast.error(`invalid input`)
+    if (email.includes("@") && password.trim() !== "") {
+      seterr("")
+      navigate("/userportal")
+      toast.success("Login Success")
+    }
+    else if (!email.includes("@")) {
+      seterr(<h4 style={errdesign}>Email must contain @</h4>)
+      toast.error("Invalid Email")
+    }
+    else {
+      seterr(<h4 style={errdesign}>Password is required</h4>)
+      toast.error("Password is required")
     }
   }
+
   return (
     <>
       <div className="users-login">
+
         <form onSubmit={handlesubmit}>
-          <h2 style={{ color: 'blue' }}>Admin login Page</h2>
+
+          <h2 style={{ color: 'blue' }}>
+            User Login Page
+          </h2>
+
           <input
             type="email"
-            placeholder='Enter Emain Address'
+            placeholder='Enter Email Address'
             name='email'
             value={formdata.email}
             onChange={handleinput}
           />
+
           <input
             type="password"
             placeholder='Enter Your Password'
@@ -82,7 +75,11 @@ const UsersLogin = () => {
           />
 
           <button>User Login</button>
+
         </form>
+
+        <h2>{err}</h2>
+
       </div>
     </>
   )

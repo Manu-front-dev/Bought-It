@@ -11,51 +11,16 @@ const AdminLogin = () => {
     password: ""
   })
 
+  let navigate = useNavigate()
+
   let handleinput = (e) => {
-    // collecting input values
     let key = e.target.name
     let val = e.target.value
 
-    // updating state
     setformdata({
       ...formdata,
       [key]: val
     })
-  }
-
-  let navigate = useNavigate()   //usenavigate is a hook present in react router dom used to navigate to next component and it return navigatefunction
-
-  let handlesubmit = (e) => {
-    e.preventDefault()
-
-    // destructuring formdata
-    let { email, password } = formdata
-
-    // credentials object
-    let credentials = {
-      admin_mail: "admin@gmail.com",
-      admin_pswd: "Admin@123"
-    }
-
-    // destructuring credentials
-    let { admin_mail, admin_pswd } = credentials
-
-
-
-    // checking login
-    if (email === admin_mail) {
-      if (password === admin_pswd) {
-        seterr('')
-        navigate("adminportal")
-        toast.success(`login success`)
-      } else {
-        seterr(<h4 style={errdesign}> Password is invalid</h4>)
-        toast.error(`Email is invalid`)
-      }
-    } else {
-      seterr(<h4 style={errdesign}> Email is invalid</h4>)
-      toast.error(`Password is Invalid`)
-    }
   }
 
   let errdesign = {
@@ -63,7 +28,24 @@ const AdminLogin = () => {
     textAlign: 'right'
   }
 
+  let handlesubmit = (e) => {
+    e.preventDefault()
 
+    let { email, password } = formdata
+
+    // Email must contain @ and password should not be empty
+    if (email.includes("@") && password.trim() !== "") {
+      seterr("")
+      navigate("adminportal")
+      toast.success("Login Success")
+    } else if (!email.includes("@")) {
+      seterr(<h4 style={errdesign}>Email must contain @</h4>)
+      toast.error("Invalid Email")
+    } else {
+      seterr(<h4 style={errdesign}>Password is required</h4>)
+      toast.error("Password is required")
+    }
+  }
 
   return (
     <>
@@ -82,6 +64,7 @@ const AdminLogin = () => {
             onChange={handleinput}
             value={formdata.email}
           />
+
           <input
             type="password"
             placeholder='Enter Your Password'
@@ -89,13 +72,12 @@ const AdminLogin = () => {
             onChange={handleinput}
             value={formdata.password}
           />
+
           <button>Admin Login</button>
+
         </form>
 
-
         <h2>{err}</h2>
-
-
 
       </div>
     </>
